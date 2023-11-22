@@ -9,6 +9,17 @@ This is MSVC-version of: https://github.com/tugrul512bit/VirtualMultiArray/wiki
 - Data is cached in RAM with faster access for redundant accesses
 - When cache doesn't hold new data, some old data is paged out to graphics cards to make space in cache (LRU approximation)
 
+Advantages:
+
+- RAM only holds cache part which is small, array is mainly kept on graphics cards: system is responsive even when using an array bigger than RAM
+- data is shared between graphics cards so a single array can be bigger than a single graphics card's memory
+- if data re-use ratio is high, then CPU's caches further improve performance
+
+Disadvantages:
+
+- small objects are not efficient because of PCIE latency. 8-byte elements can have only 200-300 MB/s random-access performance while 60kB elements can reach 50-60 GB/s
+- if graphics cards are not identical then it is harder to fine-tune total bandwidth & capacity at the same time
+
 ```C++
 // Object is an object with plain old data (any size from 1 byte to 1 megabyte per element)
 VirtualMultiArray<Object> test(n, GraphicsCardSupplyDepot().requestGpus(), pageSize, pagesPerLRU, numLRU);
