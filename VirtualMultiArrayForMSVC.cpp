@@ -51,7 +51,7 @@ int main(int argc, const char* argv[])
 {
 
 	const size_t numThr = 24;
-	std::vector<int> numLRU = { 5,5,5 }; // 5 OpenCL data channels + 5 LRU caches per physical GPU (development computer has gt1030 + k420 + k420)
+	std::vector<int> numLRU = { 12,12,12,12 }; // 12 OpenCL data channels + 12 LRU caches per physical GPU 
 	int totalLRUs = 0;
 	for (const auto& e : numLRU)
 		totalLRUs += e;
