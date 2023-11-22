@@ -10,7 +10,23 @@
 VirtualMultiArray<Object> test(n, GraphicsCardSupplyDepot().requestGpus(), pageSize, pagesPerLRU, numLRU);
 test.set(400,Object()); // written to cache
 auto t1 = test.get(400);          // cache-hit
-autı t2 = test.get(500);          // cache-miss ----> comes from graphics card memory (so you can use 48GB memory of an two RTX4090s as an automatic storage of "Object"s)
+auto t2 = test.get(500);          // cache-miss ----> comes from graphics card memory (so you can use 48GB memory of an two RTX4090s as an automatic storage of "Object"s)
+test.prefetch(401);               // prepare asynchronously for next iteration
+Object findThis;
+findThis.value = 5;
+auto foundIndex = test.find(&findThis, &findThis.value,100);  // find objects with given field value, within whole array (in cache, in graphics cards), maximum 100 indices will be listed
+auto t3 = test.getUncached(500);                              // bypass cache and directly stream data from graphics cards
+
+// memory-mapped access
+  bool read=true;
+  bool write=true;
+  bool pinned=false;
+	test.mappedReadWriteAccess(303,501,[](int * buf){
+    // even with index = 303 as starting point, buf is 4096-aligned
+		for(int i=303;i<303+501;i++)
+			buf[i]=i;
+	},pinned,read,write);
+// memory-mapped access does sequential block processing until whole region (303-501) is processed, in-order, without deadlock, using raw arrays for higher read/write/compute performance
 ```
 
 Benchmark for Ryzen 7900 + RTX4070 (pcie v4.0 x16) + RTX4060ti (pcie v4.0 x4):
