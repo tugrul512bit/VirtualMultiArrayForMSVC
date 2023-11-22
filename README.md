@@ -1,5 +1,9 @@
 # VirtualMultiArrayForMSVC
 
+This is MSVC-version of: https://github.com/tugrul512bit/VirtualMultiArray/wiki
+
+# Virtual Memory System For Arrays With Getters and Setters, in C++
+
 - Requires OpenCL for data transmissions between graphics cards & RAM, Vcpkg to install OpenCL.
 - Getters and setters use OpenCL to get/set data on graphics cards with seamless indexing
 - Data is cached in RAM with faster access for redundant accesses
@@ -17,15 +21,16 @@ findThis.value = 5;
 auto foundIndex = test.find(&findThis, &findThis.value,100);  // find objects with given field value, within whole array (in cache, in graphics cards), maximum 100 indices will be listed
 auto t3 = test.getUncached(500);                              // bypass cache and directly stream data from graphics cards
 
-// memory-mapped access
-  bool read=true;
-  bool write=true;
-  bool pinned=false;
-	test.mappedReadWriteAccess(303,501,[](int * buf){
-    // even with index = 303 as starting point, buf is 4096-aligned
-		for(int i=303;i<303+501;i++)
-			buf[i]=i;
-	},pinned,read,write);
+// memory-mapped access with reservation of indices between 303 and 804, with a lambda function given by user to compute/access all elements at once, fast
+bool read=true;
+bool write=true;
+bool pinned=false;
+test.mappedReadWriteAccess(303,501,[](int * buf){
+	// even with index = 303 as starting point, buf is 4096-aligned for performance
+	// do something with elements between index=303 & 804
+	for(int i=303;i<303+501;i++)
+		buf[i]=i;
+},pinned,read,write);
 // memory-mapped access does sequential block processing until whole region (303-501) is processed, in-order, without deadlock, using raw arrays for higher read/write/compute performance
 ```
 
