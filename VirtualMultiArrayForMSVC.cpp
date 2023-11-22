@@ -50,7 +50,7 @@ private:
 int main(int argc, const char* argv[])
 {
 
-	const size_t numThr = 64;
+	const size_t numThr = 24;
 	std::vector<int> numLRU = { 5,5,5 }; // 5 OpenCL data channels + 5 LRU caches per physical GPU (development computer has gt1030 + k420 + k420)
 	int totalLRUs = 0;
 	for (const auto& e : numLRU)
@@ -59,7 +59,7 @@ int main(int argc, const char* argv[])
 	const int pagesPerLRU = 50; // cache lines
 	int numElementsForAllLRUs = totalLRUs * pagesPerLRU * pageSize;
 	const long long n = numElementsForAllLRUs * 100;
-	std::cout << "64-thread random-access performance benchmark." << std::endl;
+	std::cout << "24-thread random-access performance benchmark." << std::endl;
 	std::cout << "Element size = " << TEST_OBJ_SIZE << " bytes" << std::endl;
 	std::cout << "Array size = " << n * sizeof(Object) << " bytes" << std::endl;
 	std::cout << "Cache size = " << numElementsForAllLRUs * sizeof(Object) << " bytes" << std::endl;
@@ -78,7 +78,7 @@ int main(int argc, const char* argv[])
 	};
 	std::vector<Graph2D> log1;
 	std::vector<Graph2D> log2;
-#pragma omp parallel for num_threads(64)
+#pragma omp parallel for num_threads(24)
 	for (long long j = 0; j < n; j++)
 	{
 		test.set(j, Object(j));
